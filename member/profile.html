@@ -122,33 +122,87 @@
                 return;
             }
 
-            // 現在のユーザー情報を表示
-            const name = localStorage.getItem('memberName');
-            const email = localStorage.getItem('memberEmail');
+            // プロフィール情報を取得
+            async function fetchProfile() {
+                try {
+                    const response = await fetch('/api/member/profile', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('プロフィール情報の取得に失敗しました');
+                    }
+                    
+                    const profile = await response.json();
+                    document.getElementById('name').value = profile.name || '';
+                    document.getElementById('email').value = profile.email || '';
+                    document.getElementById('phone').value = profile.phone || '';
+                    document.getElementById('address').value = profile.address || '';
+                } catch (error) {
+                    showError(error.message);
+                }
+            }
             
-            document.getElementById('name').value = name || '';
-            document.getElementById('email').value = email || '';
+            fetchProfile();
+
+            // エラーメッセージを表示
+            function showError(message) {
+                const errorElement = document.getElementById('errorMessage');
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 5000);
+            }
+
+            // 成功メッセージを表示
+            function showSuccess(message) {
+                const successElement = document.getElementById('successMessage');
+                successElement.textContent = message;
+                successElement.style.display = 'block';
+                setTimeout(() => {
+                    successElement.style.display = 'none';
+                }, 5000);
+            }
 
             // フォーム送信処理
             document.getElementById('profileForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                const formData = {};
-                
-                // 入力された値のみを送信
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const phone = document.getElementById('phone').value;
-                const address = document.getElementById('address').value;
-                const currentPassword = document.getElementById('currentPassword').value;
-                const newPassword = document.getElementById('newPassword').value;
+                try {
+                    const name = document.getElementById('name').value.trim();
+                    const phone = document.getElementById('phone').value.trim();
+                    const address = document.getElementById('address').value.trim();
 
-                console.log('Form values:', {
-                    name,
-                    email,
-                    phone,
-                    address,
-                    hasCurrentPassword: !!currentPassword,
+                    if (!name) {
+                        throw new Error('お名前は必須です');
+                    }
+
+                    const response = await fetch('/api/member/profile', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            name,
+                            phone,
+                            address
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('プロフィールの更新に失敗しました');
+                    }
+
+                    const result = await response.json();
+                    localStorage.setItem('memberName', result.name);
+                    showSuccess('プロフィールを更新しました');
+                } catch (error) {
+                    showError(error.message);
+                }
                     hasNewPassword: !!newPassword
                 });
 

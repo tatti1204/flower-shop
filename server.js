@@ -1,9 +1,14 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs').promises;
 const path = require('path');
 const { findUserByEmail, findUserById, updateUser, setupInitialData } = require('./db/mongodb');
+
+// MongoDBの接続文字列をログ出力（パスワードは隠す）
+console.log('MongoDB URI:', process.env.MONGODB_URI?.replace(/:([^:@]+)@/, ':****@'));
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -93,7 +98,76 @@ app.post('/api/member/login', async (req, res) => {
     }
 });
 
+// エラーハンドリング関数
+const handleError = (error, res, defaultMessage) => {
+    console.error('Error:', error);
+    if (error.name === 'ValidationError') {
+        return res.status(400).json({ error: error.message });
+    }
+    if (error.name === 'AuthenticationError') {
+        return res.status(401).json({ error: error.message });
+    }
+    res.status(500).json({ error: defaultMessage });
+};
+
+// 入力チェック関数
+const validateProfileInput = (body) => {
+    const { name, phone, address } = body;
+    if (!name || name.trim().length === 0) {
+        throw Object.assign(new Error('お名前は必須です'), { name: 'ValidationError' });
+    }
+    if (name.length > 50) {
+        throw Object.assign(new Error('お名前は50文字以内で入力してください'), { name: 'ValidationError' });
+    }
+    if (phone && !phone.match(/^[0-9-]*$/)) {
+        throw Object.assign(new Error('電話番号は数字とハイフンのみを使用してください'), { name: 'ValidationError' });
+    }
+    return { name, phone, address };
+};
+
+// プロフィール取得API
+app.get('/api/member/profile', authenticateMember, async (req, res) => {
+    try {
+        if (!req.user) {
+            throw Object.assign(new Error('ユーザー情報が見つかりません'), { name: 'AuthenticationError' });
+        }
+
+        res.json({
+            name: req.user.name,
+            email: req.user.email,
+            membershipLevel: req.user.membershipLevel,
+            phone: req.user.phone || '',
+            address: req.user.address || '',
+            registeredDate: req.user.registeredDate
+        });
+    } catch (error) {
+        handleError(error, res, 'プロフィール情報の取得に失敗しました');
+    }
+});
+
 // プロフィール更新API
+app.put('/api/member/profile', authenticateMember, async (req, res) => {
+    try {
+        const validatedData = validateProfileInput(req.body);
+        const updatedUser = await updateUser(req.user.id, validatedData);
+        
+        if (!updatedUser) {
+            throw Object.assign(new Error('ユーザー情報の更新に失敗しました'), { name: 'ValidationError' });
+        }
+
+        res.json({
+            name: updatedUser.name,
+            email: updatedUser.email,
+            membershipLevel: updatedUser.membershipLevel,
+            phone: updatedUser.phone || '',
+            address: updatedUser.address || '',
+            registeredDate: updatedUser.registeredDate
+        });
+    } catch (error) {
+        handleError(error, res, 'プロフィール情報の更新に失敗しました');
+    }
+});
+
 app.post('/api/member/profile', authenticateMember, async (req, res) => {
     try {
         console.log('Profile update request body:', req.body);
