@@ -9,7 +9,30 @@ const port = process.env.PORT || 3001;
 
 // ニュースデータのパス
 const newsFilePath = path.join(__dirname, 'data', 'news.json');
+// ユーザーデータの初期化
+let usersData = {
+    users: [{
+        id: 'demo1',
+        email: 'demo@example.com',
+        password: 'demo1234',
+        name: 'デモユーザー',
+        membershipLevel: 'gold',
+        registeredDate: '2025-02-02',
+        phone: '',
+        address: ''
+    }]
+};
+
+// ローカル開発環境の場合はファイルから読み込む
 const usersFilePath = path.join(__dirname, 'data', 'users.json');
+if (process.env.NODE_ENV !== 'production') {
+    try {
+        const fileData = fs.readFileSync(usersFilePath, 'utf8');
+        usersData = JSON.parse(fileData);
+    } catch (error) {
+        console.error('Error reading users file:', error);
+    }
+}
 
 // 認証ミドルウェア（簡易版）
 const authenticate = (req, res, next) => {
@@ -50,9 +73,8 @@ const authenticateMember = async (req, res, next) => {
         const userId = decodedToken.split('-')[0];
         console.log('User ID:', userId);
 
-        const userData = await fs.readFile(usersFilePath, 'utf8');
-        console.log('User data:', userData);
-        const users = JSON.parse(userData).users;
+        // ユーザーデータの取得
+        const users = usersData.users;
         const user = users.find(u => u.id === userId);
         console.log('Found user:', user);
 
@@ -102,11 +124,7 @@ app.post('/api/member/profile', authenticateMember, async (req, res) => {
         console.log('Authenticated user:', req.user);
 
         const { name, email, phone, address, currentPassword, newPassword } = req.body;
-        const userData = await fs.readFile(usersFilePath, 'utf8');
-        console.log('Current user data:', userData);
-
-        const users = JSON.parse(userData);
-        const userIndex = users.users.findIndex(u => u.id === req.user.id);
+        const userIndex = usersData.users.findIndex(u => u.id === req.user.id);
         console.log('Found user index:', userIndex);
 
         if (userIndex === -1) {
@@ -122,12 +140,15 @@ app.post('/api/member/profile', authenticateMember, async (req, res) => {
         }
 
         // プロフィール情報の更新
-        users.users[userIndex].name = name || users.users[userIndex].name;
-        users.users[userIndex].email = email || users.users[userIndex].email;
-        users.users[userIndex].phone = phone || users.users[userIndex].phone || '';
-        users.users[userIndex].address = address || users.users[userIndex].address || '';
+        usersData.users[userIndex].name = name || usersData.users[userIndex].name;
+        usersData.users[userIndex].email = email || usersData.users[userIndex].email;
+        usersData.users[userIndex].phone = phone || usersData.users[userIndex].phone || '';
+        usersData.users[userIndex].address = address || usersData.users[userIndex].address || '';
 
-        await fs.writeFile(usersFilePath, JSON.stringify(users, null, 2));
+        // ローカル開発環境の場合はファイルに保存
+        if (process.env.NODE_ENV !== 'production') {
+            await fs.writeFile(usersFilePath, JSON.stringify(usersData, null, 2));
+        }
 
         res.json({
             message: 'プロフィールを更新しました',

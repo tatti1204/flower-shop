@@ -3,10 +3,12 @@
     {
       "id": "demo1",
       "email": "demo@example.com",
-      "password": "demo1234",
+      "password": "tatti4021",
       "name": "デモユーザー",
       "membershipLevel": "gold",
-      "registeredDate": "2025-02-02"
+      "registeredDate": "2025-02-02",
+      "phone": "",
+      "address": ""
     }
   ]
 }
