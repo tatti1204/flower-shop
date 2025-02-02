@@ -33,6 +33,32 @@ app.use('/admin', express.static(path.join(__dirname, 'admin')));
 app.use('/member', express.static(path.join(__dirname, 'member')));
 
 // 会員ログインAPI
+// ユーザー認証ミドルウェア
+const authenticateMember = async (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ error: '認証が必要です' });
+    }
+
+    try {
+        // トークンからユーザーIDを取得
+        const userId = Buffer.from(token, 'base64').toString().split('-')[0];
+        const userData = await fs.readFile(usersFilePath, 'utf8');
+        const users = JSON.parse(userData).users;
+        const user = users.find(u => u.id === userId);
+
+        if (!user) {
+            return res.status(401).json({ error: '無効なトークンです' });
+        }
+
+        req.user = user;
+        next();
+    } catch (error) {
+        console.error('Authentication error:', error);
+        res.status(401).json({ error: '認証に失敗しました' });
+    }
+};
+
 app.post('/api/member/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -55,6 +81,47 @@ app.post('/api/member/login', async (req, res) => {
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'ログイン処理に失敗しました' });
+    }
+});
+
+// プロフィール更新API
+app.post('/api/member/profile', authenticateMember, async (req, res) => {
+    try {
+        const { name, email, phone, address, currentPassword, newPassword } = req.body;
+        const userData = await fs.readFile(usersFilePath, 'utf8');
+        const users = JSON.parse(userData);
+        const userIndex = users.users.findIndex(u => u.id === req.user.id);
+
+        if (userIndex === -1) {
+            return res.status(404).json({ error: 'ユーザーが見つかりません' });
+        }
+
+        // パスワード変更のチェック
+        if (currentPassword && newPassword) {
+            if (users.users[userIndex].password !== currentPassword) {
+                return res.status(400).json({ error: '現在のパスワードが正しくありません' });
+            }
+            users.users[userIndex].password = newPassword;
+        }
+
+        // プロフィール情報の更新
+        users.users[userIndex].name = name;
+        users.users[userIndex].email = email;
+        users.users[userIndex].phone = phone || users.users[userIndex].phone;
+        users.users[userIndex].address = address || users.users[userIndex].address;
+
+        await fs.writeFile(usersFilePath, JSON.stringify(users, null, 2));
+
+        res.json({
+            message: 'プロフィールを更新しました',
+            user: {
+                name: users.users[userIndex].name,
+                email: users.users[userIndex].email
+            }
+        });
+    } catch (error) {
+        console.error('Profile update error:', error);
+        res.status(500).json({ error: 'プロフィールの更新に失敗しました' });
     }
 });
 
