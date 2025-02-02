@@ -16,65 +16,75 @@
                 <i class="fas fa-user"></i>
                 <span id="username-display"></span>
             </span>
-            <nav>
-                <ul>
-                    <li><a href="/flower-shop/member/login.html">会員ログイン</a></li>
-                </ul>
-            </nav>
-            <a href="/flower-shop/member/login.html">会員ログイン</a>
+
         </div>
         <ul class="nav-menu">
-            <li class="active"><a href="#news"><i class="fas fa-newspaper"></i>お知らせ管理</a></li>
-            <li><a href="#products"><i class="fas fa-flower"></i>商品管理</a></li>
-            <li><a href="#orders"><i class="fas fa-shopping-cart"></i>注文管理</a></li>
-            <li><a href="#users"><i class="fas fa-users"></i>ユーザー管理</a></li>
+            <li><a href="/admin/news.html"><i class="fas fa-newspaper"></i>お知らせ管理</a></li>
+            <li><a href="/admin/products.html"><i class="fas fa-gift"></i>商品管理</a></li>
+            <li><a href="/admin/orders.html"><i class="fas fa-shopping-cart"></i>注文管理</a></li>
+            <li class="active"><a href="/admin/members.html"><i class="fas fa-users"></i>会員管理</a></li>
             <li class="logout"><a href="#" id="logout"><i class="fas fa-sign-out-alt"></i>ログアウト</a></li>
         </ul>
     </nav>
 
     <main class="admin-main">
         <div class="content-header">
-            <h2>お知らせ管理</h2>
-            <button class="add-new" id="addNewNews">
-                <i class="fas fa-plus"></i> 新規追加
-            </button>
-        </div>
-
-        <div class="content-body">
-            <div class="news-list" id="newsList">
-                <!-- ニュース一覧がここに動的に表示されます -->
+            <h2>会員管理</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="会員名やメールアドレスで検索">
+                <button onclick="searchMembers()">検索</button>
             </div>
         </div>
 
-        <!-- 新規追加/編集モーダル -->
-        <div class="modal" id="newsModal">
+        <div class="content-body">
+            <table class="member-list">
+                <thead>
+                    <tr>
+                        <th>会員名</th>
+                        <th>メールアドレス</th>
+                        <th>会員レベル</th>
+                        <th>登録日</th>
+                        <th>最終更新日</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="memberList">
+                    <!-- JavaScriptで動的に追加 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 会員編集モーダル -->
+        <div class="modal" id="memberModal">
             <div class="modal-content">
-                <h3>お知らせを編集</h3>
-                <form id="newsForm">
+                <h3>会員情報を編集</h3>
+                <form id="memberForm">
                     <div class="form-group">
-                        <label for="newsTitle">タイトル</label>
-                        <input type="text" id="newsTitle" name="title" required>
+                        <label for="memberName">会員名</label>
+                        <input type="text" id="memberName" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label for="newsCategory">カテゴリー</label>
-                        <select id="newsCategory" name="category" required>
-                            <option value="お知らせ">お知らせ</option>
-                            <option value="店舗情報">店舗情報</option>
-                            <option value="キャンペーン">キャンペーン</option>
-                            <option value="商品情報">商品情報</option>
-                            <option value="ワークショップ">ワークショップ</option>
+                        <label for="memberEmail">メールアドレス</label>
+                        <input type="email" id="memberEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="memberLevel">会員レベル</label>
+                        <select id="memberLevel" name="membershipLevel" required>
+                            <option value="gold">ゴールド会員</option>
+                            <option value="silver">シルバー会員</option>
+                            <option value="normal">一般会員</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="newsExcerpt">概要</label>
-                        <textarea id="newsExcerpt" name="excerpt" required></textarea>
+                        <label for="memberPhone">電話番号</label>
+                        <input type="tel" id="memberPhone" name="phone">
                     </div>
                     <div class="form-group">
-                        <label for="newsUrl">URL</label>
-                        <input type="text" id="newsUrl" name="url" required>
+                        <label for="memberAddress">住所</label>
+                        <textarea id="memberAddress" name="address"></textarea>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="cancel" onclick="closeModal()">キャンセル</button>
+                        <button type="button" class="cancel" onclick="closeMemberModal()">キャンセル</button>
                         <button type="submit" class="save">保存</button>
                     </div>
                 </form>

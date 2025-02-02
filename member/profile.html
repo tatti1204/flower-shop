@@ -18,7 +18,55 @@
 
         .profile-header {
             text-align: center;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .current-profile {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
             margin-bottom: 30px;
+            display: grid;
+            gap: 30px;
+        }
+
+        .info-section {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .info-section h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 1.1em;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4CAF50;
+        }
+
+        .info-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-group:last-child {
+            border-bottom: none;
+        }
+
+        .info-group label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .info-group p {
+            margin: 0;
+            color: #333;
+            font-weight: 500;
         }
 
         .profile-form {
@@ -80,6 +128,50 @@
 <body>
     <div class="profile-container">
         <div class="profile-header">
+            <div style="text-align: left; margin-bottom: 20px;">
+                <a href="/" class="btn btn-outline-primary" style="text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i> トップページへ戻る
+                </a>
+            </div>
+            <h2>プロフィール情報</h2>
+        </div>
+        <div class="current-profile">
+            <div class="info-section">
+                <h3>基本情報</h3>
+                <div class="info-group">
+                    <label>お名前</label>
+                    <p id="currentName"></p>
+                </div>
+                <div class="info-group">
+                    <label>メールアドレス</label>
+                    <p id="currentEmail"></p>
+                </div>
+                <div class="info-group">
+                    <label>電話番号</label>
+                    <p id="currentPhone"></p>
+                </div>
+                <div class="info-group">
+                    <label>住所</label>
+                    <p id="currentAddress"></p>
+                </div>
+            </div>
+            <div class="info-section">
+                <h3>会員情報</h3>
+                <div class="info-group">
+                    <label>会員レベル</label>
+                    <p id="currentMembershipLevel"></p>
+                </div>
+                <div class="info-group">
+                    <label>登録日</label>
+                    <p id="currentRegisteredDate"></p>
+                </div>
+                <div class="info-group">
+                    <label>最終更新日</label>
+                    <p id="currentUpdatedAt"></p>
+                </div>
+            </div>
+        </div>
+        <div class="profile-header">
             <h2>プロフィール編集</h2>
         </div>
         <form id="profileForm" class="profile-form">
@@ -115,14 +207,58 @@
     <script src="/js/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // ログイン状態のチェック
-            const token = localStorage.getItem('memberToken');
+            let token = localStorage.getItem('memberToken');
             if (!token) {
                 window.location.href = '/member/login.html';
                 return;
             }
 
-            // プロフィール情報を取得
+            // プロフィール情報を表示する関数
+            function displayProfile(profile) {
+                // フォームに値を設定
+                document.getElementById('name').value = profile.name || '';
+                document.getElementById('email').value = profile.email || '';
+                document.getElementById('phone').value = profile.phone || '';
+                document.getElementById('address').value = profile.address || '';
+
+                // 基本情報を表示
+                document.getElementById('currentName').textContent = profile.name || '未設定';
+                document.getElementById('currentEmail').textContent = profile.email || '未設定';
+                document.getElementById('currentPhone').textContent = profile.phone || '未設定';
+                document.getElementById('currentAddress').textContent = profile.address || '未設定';
+
+                // 会員情報を表示
+                document.getElementById('currentMembershipLevel').textContent = 
+                    profile.membershipLevel === 'gold' ? 'ゴールド会員' :
+                    profile.membershipLevel === 'silver' ? 'シルバー会員' :
+                    '一般会員';
+
+                // 登録日を表示
+                const registeredDate = new Date(profile.registeredDate);
+                document.getElementById('currentRegisteredDate').textContent = 
+                    registeredDate.toLocaleDateString('ja-JP', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+
+                // 最終更新日を表示
+                if (profile.updatedAt) {
+                    const updatedAt = new Date(profile.updatedAt);
+                    document.getElementById('currentUpdatedAt').textContent = 
+                        updatedAt.toLocaleDateString('ja-JP', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                } else {
+                    document.getElementById('currentUpdatedAt').textContent = '未更新';
+                }
+            }
+
+            // プロフィール情報を取得する関数
             async function fetchProfile() {
                 try {
                     const response = await fetch('/api/member/profile', {
@@ -136,10 +272,7 @@
                     }
                     
                     const profile = await response.json();
-                    document.getElementById('name').value = profile.name || '';
-                    document.getElementById('email').value = profile.email || '';
-                    document.getElementById('phone').value = profile.phone || '';
-                    document.getElementById('address').value = profile.address || '';
+                    displayProfile(profile);
                 } catch (error) {
                     showError(error.message);
                 }
@@ -167,106 +300,70 @@
                 }, 5000);
             }
 
+            // プロフィール情報を更新する関数
+            async function updateProfile(formData) {
+                const response = await fetch('/api/member/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'プロフィールの更新に失敗しました');
+                }
+
+                const result = await response.json();
+                console.log('Update result:', result);
+                displayProfile(result);
+                return result;
+            }
+
             // フォーム送信処理
             document.getElementById('profileForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
                 try {
                     const name = document.getElementById('name').value.trim();
+                    const email = document.getElementById('email').value.trim();
                     const phone = document.getElementById('phone').value.trim();
                     const address = document.getElementById('address').value.trim();
 
                     if (!name) {
                         throw new Error('お名前は必須です');
                     }
-
-                    const response = await fetch('/api/member/profile', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            name,
-                            phone,
-                            address
-                        })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('プロフィールの更新に失敗しました');
+                    if (!email) {
+                        throw new Error('メールアドレスは必須です');
                     }
 
-                    const result = await response.json();
+                    const currentPassword = document.getElementById('currentPassword').value.trim();
+                    const newPassword = document.getElementById('newPassword').value.trim();
+
+                    const formData = { name, email, phone, address };
+
+                    // パスワードが入力されている場合のみ追加
+                    if (currentPassword && newPassword) {
+                        if (newPassword.length < 8) {
+                            throw new Error('新しいパスワードは8文字以上で入力してください');
+                        }
+                        formData.currentPassword = currentPassword;
+                        formData.newPassword = newPassword;
+                    }
+
+                    console.log('送信するデータ:', formData);
+                    const result = await updateProfile(formData);
+                    console.log('更新結果:', result);
+                    
+                    // ローカルストレージを更新
                     localStorage.setItem('memberName', result.name);
+                    localStorage.setItem('memberEmail', result.email);
+                    
                     showSuccess('プロフィールを更新しました');
                 } catch (error) {
                     showError(error.message);
-                }
-                    hasNewPassword: !!newPassword
-                });
-
-                if (name) formData.name = name;
-                if (email) formData.email = email;
-                if (phone) formData.phone = phone;
-                if (address) formData.address = address;
-                if (currentPassword && newPassword) {
-                    formData.currentPassword = currentPassword;
-                    formData.newPassword = newPassword;
-                }
-
-                console.log('Sending form data:', formData);
-                console.log('Token:', token);
-
-                try {
-                    console.log('Sending request to:', '/api/member/profile');
-                    const response = await fetch('/api/member/profile', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify(formData)
-                    });
-
-                    console.log('Response status:', response.status);
-                    const data = await response.json();
-                    console.log('Response data:', data);
-
-                    if (response.ok) {
-                        // プロフィール更新成功
-                        localStorage.setItem('memberName', data.user.name);
-                        localStorage.setItem('memberEmail', data.user.email);
-                        
-                        // フォームの値を更新
-                        document.getElementById('name').value = data.user.name;
-                        document.getElementById('email').value = data.user.email;
-                        document.getElementById('phone').value = data.user.phone || '';
-                        document.getElementById('address').value = data.user.address || '';
-                        
-                        // パスワードフィールドをクリア
-                        document.getElementById('currentPassword').value = '';
-                        document.getElementById('newPassword').value = '';
-                        
-                        const successMessage = document.getElementById('successMessage');
-                        successMessage.textContent = data.message;
-                        successMessage.style.display = 'block';
-                        
-                        // 3秒後にメッセージを消す
-                        setTimeout(() => {
-                            successMessage.style.display = 'none';
-                        }, 3000);
-                    } else {
-                        // エラーメッセージを表示
-                        const errorMessage = document.getElementById('errorMessage');
-                        errorMessage.textContent = data.error || '更新に失敗しました';
-                        errorMessage.style.display = 'block';
-                    }
-                } catch (error) {
-                    console.error('Profile update error:', error);
-                    const errorMessage = document.getElementById('errorMessage');
-                    errorMessage.textContent = 'サーバーとの通信に失敗しました';
-                    errorMessage.style.display = 'block';
                 }
             });
         });

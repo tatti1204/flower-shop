@@ -65,11 +65,16 @@ async function findUserById(id) {
 
 // ユーザーデータのバリデーション
 const validateUserData = (userData) => {
-    const { name, phone, address } = userData;
+    const { name, email, phone, address } = userData;
 
     // 必須フィールドのチェック
     if (!name) {
         throw new Error('お名前は必須です');
+    }
+
+    // メールアドレスのフォーマットチェック
+    if (!email || !email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
+        throw new Error('正しいメールアドレスを入力してください');
     }
 
     // 電話番号のフォーマットチェック
@@ -77,7 +82,7 @@ const validateUserData = (userData) => {
         throw new Error('電話番号のフォーマットが正しくありません');
     }
 
-    return { name, phone, address };
+    return { name, email, phone, address };
 };
 
 async function updateUser(id, userData) {
@@ -90,20 +95,35 @@ async function updateUser(id, userData) {
             throw new Error('ユーザーが見つかりません');
         }
 
-        // データのバリデーション
-        const validatedData = validateUserData(userData);
+        // 更新データの準備
+        const updateData = {};
+
+        // プロフィール情報の更新
+        if (userData.name) updateData.name = userData.name;
+        if (userData.email) updateData.email = userData.email;
+        if (userData.phone !== undefined) updateData.phone = userData.phone;
+        if (userData.address !== undefined) updateData.address = userData.address;
+
+        // パスワードの更新
+        if (userData.password) {
+            updateData.password = userData.password;
+        }
 
         // 更新日時を追加
-        validatedData.updatedAt = new Date().toISOString();
+        updateData.updatedAt = new Date().toISOString();
+
+        console.log('更新するデータ:', updateData);
 
         // データ更新
         await db.collection('users').updateOne(
             { id },
-            { $set: validatedData }
+            { $set: updateData }
         );
 
         // 更新後のデータを取得
-        return db.collection('users').findOne({ id });
+        const updatedUser = await db.collection('users').findOne({ id });
+        console.log('更新後のデータ:', updatedUser);
+        return updatedUser;
     } catch (error) {
         console.error('Error updating user:', error);
         throw error;

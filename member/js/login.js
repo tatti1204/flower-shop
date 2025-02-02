@@ -5,6 +5,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const password = document.getElementById('password').value;
     const errorMessage = document.getElementById('errorMessage');
     
+    console.log('ログイン試行:', { email });
+    
     try {
         const response = await fetch('/api/member/login', {
             method: 'POST',
@@ -14,16 +16,26 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             body: JSON.stringify({ email, password })
         });
         
+        console.log('レスポンスステータス:', response.status);
         const data = await response.json();
+        console.log('レスポンスデータ:', data);
         
         if (response.ok) {
-            // ログイン成功
+            console.log('ログイン成功:', { 
+                token: data.token,
+                name: data.name,
+                email: data.email
+            });
+            
+            // ローカルストレージに保存
             localStorage.setItem('memberToken', data.token);
             localStorage.setItem('memberName', data.name);
             localStorage.setItem('memberEmail', email);
+            
+            // トップページに遷移
             window.location.href = '/';
         } else {
-            // ログイン失敗
+            console.log('ログイン失敗:', data.error);
             errorMessage.textContent = data.error || 'ログインに失敗しました';
             errorMessage.style.display = 'block';
         }
