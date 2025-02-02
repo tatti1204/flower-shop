@@ -73,6 +73,7 @@ app.post('/api/member/login', async (req, res) => {
             res.json({
                 token,
                 name: user.name,
+                email: user.email,
                 membershipLevel: user.membershipLevel
             });
         } else {
@@ -105,10 +106,10 @@ app.post('/api/member/profile', authenticateMember, async (req, res) => {
         }
 
         // プロフィール情報の更新
-        users.users[userIndex].name = name;
-        users.users[userIndex].email = email;
-        users.users[userIndex].phone = phone || users.users[userIndex].phone;
-        users.users[userIndex].address = address || users.users[userIndex].address;
+        users.users[userIndex].name = name || users.users[userIndex].name;
+        users.users[userIndex].email = email || users.users[userIndex].email;
+        users.users[userIndex].phone = phone || users.users[userIndex].phone || '';
+        users.users[userIndex].address = address || users.users[userIndex].address || '';
 
         await fs.writeFile(usersFilePath, JSON.stringify(users, null, 2));
 
@@ -116,7 +117,9 @@ app.post('/api/member/profile', authenticateMember, async (req, res) => {
             message: 'プロフィールを更新しました',
             user: {
                 name: users.users[userIndex].name,
-                email: users.users[userIndex].email
+                email: users.users[userIndex].email,
+                phone: users.users[userIndex].phone,
+                address: users.users[userIndex].address
             }
         });
     } catch (error) {
