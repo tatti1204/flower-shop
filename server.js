@@ -35,19 +35,29 @@ app.use('/member', express.static(path.join(__dirname, 'member')));
 // 会員ログインAPI
 // ユーザー認証ミドルウェア
 const authenticateMember = async (req, res, next) => {
+    console.log('Authorization header:', req.headers.authorization);
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
+        console.log('No token provided');
         return res.status(401).json({ error: '認証が必要です' });
     }
 
     try {
         // トークンからユーザーIDを取得
-        const userId = Buffer.from(token, 'base64').toString().split('-')[0];
+        console.log('Token:', token);
+        const decodedToken = Buffer.from(token, 'base64').toString();
+        console.log('Decoded token:', decodedToken);
+        const userId = decodedToken.split('-')[0];
+        console.log('User ID:', userId);
+
         const userData = await fs.readFile(usersFilePath, 'utf8');
+        console.log('User data:', userData);
         const users = JSON.parse(userData).users;
         const user = users.find(u => u.id === userId);
+        console.log('Found user:', user);
 
         if (!user) {
+            console.log('User not found');
             return res.status(401).json({ error: '無効なトークンです' });
         }
 
@@ -88,10 +98,16 @@ app.post('/api/member/login', async (req, res) => {
 // プロフィール更新API
 app.post('/api/member/profile', authenticateMember, async (req, res) => {
     try {
+        console.log('Profile update request body:', req.body);
+        console.log('Authenticated user:', req.user);
+
         const { name, email, phone, address, currentPassword, newPassword } = req.body;
         const userData = await fs.readFile(usersFilePath, 'utf8');
+        console.log('Current user data:', userData);
+
         const users = JSON.parse(userData);
         const userIndex = users.users.findIndex(u => u.id === req.user.id);
+        console.log('Found user index:', userIndex);
 
         if (userIndex === -1) {
             return res.status(404).json({ error: 'ユーザーが見つかりません' });

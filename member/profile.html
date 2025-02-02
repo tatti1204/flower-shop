@@ -115,7 +115,14 @@
     <script src="/js/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 現在のユーザー情報を取得して表示
+            // ログイン状態のチェック
+            const token = localStorage.getItem('memberToken');
+            if (!token) {
+                window.location.href = '/member/login.html';
+                return;
+            }
+
+            // 現在のユーザー情報を表示
             const name = localStorage.getItem('memberName');
             const email = localStorage.getItem('memberEmail');
             
@@ -126,34 +133,69 @@
             document.getElementById('profileForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                const formData = {
-                    name: document.getElementById('name').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    address: document.getElementById('address').value,
-                    currentPassword: document.getElementById('currentPassword').value,
-                    newPassword: document.getElementById('newPassword').value
-                };
+                const formData = {};
+                
+                // 入力された値のみを送信
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const address = document.getElementById('address').value;
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+
+                console.log('Form values:', {
+                    name,
+                    email,
+                    phone,
+                    address,
+                    hasCurrentPassword: !!currentPassword,
+                    hasNewPassword: !!newPassword
+                });
+
+                if (name) formData.name = name;
+                if (email) formData.email = email;
+                if (phone) formData.phone = phone;
+                if (address) formData.address = address;
+                if (currentPassword && newPassword) {
+                    formData.currentPassword = currentPassword;
+                    formData.newPassword = newPassword;
+                }
+
+                console.log('Sending form data:', formData);
+                console.log('Token:', token);
 
                 try {
+                    console.log('Sending request to:', '/api/member/profile');
                     const response = await fetch('/api/member/profile', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('memberToken')}`
+                            'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify(formData)
                     });
 
+                    console.log('Response status:', response.status);
                     const data = await response.json();
+                    console.log('Response data:', data);
 
                     if (response.ok) {
                         // プロフィール更新成功
-                        localStorage.setItem('memberName', formData.name);
-                        localStorage.setItem('memberEmail', formData.email);
+                        localStorage.setItem('memberName', data.user.name);
+                        localStorage.setItem('memberEmail', data.user.email);
+                        
+                        // フォームの値を更新
+                        document.getElementById('name').value = data.user.name;
+                        document.getElementById('email').value = data.user.email;
+                        document.getElementById('phone').value = data.user.phone || '';
+                        document.getElementById('address').value = data.user.address || '';
+                        
+                        // パスワードフィールドをクリア
+                        document.getElementById('currentPassword').value = '';
+                        document.getElementById('newPassword').value = '';
                         
                         const successMessage = document.getElementById('successMessage');
-                        successMessage.textContent = 'プロフィールを更新しました';
+                        successMessage.textContent = data.message;
                         successMessage.style.display = 'block';
                         
                         // 3秒後にメッセージを消す
