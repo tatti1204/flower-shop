@@ -20,7 +20,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             // ログイン成功
             localStorage.setItem('memberToken', data.token);
             localStorage.setItem('memberName', data.name);
-            window.location.href = '/member/mypage.html';
+            window.location.href = '/';
         } else {
             // ログイン失敗
             errorMessage.textContent = data.error || 'ログインに失敗しました';
