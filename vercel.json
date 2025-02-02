@@ -24,12 +24,28 @@
     {
       "src": "admin/**",
       "use": "@vercel/static"
+    },
+    {
+      "src": "member/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "data/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
+      "src": "/api/member/(.*)",
+      "dest": "server.js"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "server.js"
+    },
+    {
+      "src": "/member/(.*)",
+      "dest": "/member/$1"
     },
     {
       "src": "/(.*)",
