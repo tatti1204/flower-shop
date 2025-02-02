@@ -20,6 +20,18 @@
     transform: translateY(-5px);
 }
 
+.member-login {
+    background: #4CAF50;
+    color: white !important;
+    padding: 8px 15px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.member-login:hover {
+    background: #45a049;
+}
+
 .news-image {
     position: relative;
     height: 100%;
