@@ -20,6 +20,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             // ログイン成功
             localStorage.setItem('memberToken', data.token);
             localStorage.setItem('memberName', data.name);
+            localStorage.setItem('memberEmail', email);
             window.location.href = '/';
         } else {
             // ログイン失敗
