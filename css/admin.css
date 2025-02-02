@@ -1,0 +1,288 @@
+/* 管理画面全体のスタイル */
+:root {
+    --primary-color: #9b8b7e;
+    --secondary-color: #e7e1d6;
+    --text-color: #333;
+    --error-color: #dc3545;
+    --success-color: #28a745;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #f8f6f3;
+    color: var(--text-color);
+}
+
+/* ログイン画面 */
+.admin-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f6f3 0%, #e7e1d6 100%);
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+}
+
+.login-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-box h1 {
+    text-align: center;
+    font-family: 'Noto Serif JP', serif;
+    margin-bottom: 0.5rem;
+}
+
+.login-box h2 {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+button {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #8a7a6d;
+}
+
+.error-message {
+    color: var(--error-color);
+    text-align: center;
+    margin-top: 1rem;
+}
+
+/* ダッシュボード */
+.admin-dashboard {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: 100vh;
+}
+
+.admin-nav {
+    background: white;
+    padding: 2rem;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-header {
+    margin-bottom: 2rem;
+}
+
+.nav-header h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-color);
+    margin-top: 1rem;
+}
+
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-menu li {
+    margin-bottom: 0.5rem;
+}
+
+.nav-menu a {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-menu a:hover,
+.nav-menu li.active a {
+    background: var(--secondary-color);
+}
+
+.nav-menu i {
+    width: 20px;
+}
+
+.logout {
+    margin-top: 2rem;
+}
+
+.admin-main {
+    padding: 2rem;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.content-header h2 {
+    margin: 0;
+}
+
+.add-new {
+    width: auto;
+    padding: 0.8rem 1.5rem;
+}
+
+/* ニュース一覧 */
+.news-list {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.news-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--secondary-color);
+}
+
+.news-item:last-child {
+    border-bottom: none;
+}
+
+.news-content h3 {
+    margin: 0 0 0.5rem 0;
+}
+
+.news-meta {
+    display: flex;
+    gap: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.news-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.news-actions button {
+    width: auto;
+    padding: 0.5rem 1rem;
+}
+
+.news-actions .edit {
+    background: var(--primary-color);
+}
+
+.news-actions .delete {
+    background: var(--error-color);
+}
+
+/* モーダル */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.modal-content h3 {
+    margin: 0 0 1.5rem 0;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.form-actions button {
+    width: auto;
+    padding: 0.8rem 1.5rem;
+}
+
+.form-actions .cancel {
+    background: #666;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .admin-dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-nav {
+        display: none;
+    }
+
+    .news-item {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .news-actions {
+        justify-content: flex-end;
+    }
+}

@@ -1,0 +1,76 @@
+{
+  "news": [
+    {
+      "title": "tes3",
+      "category": "お知らせ",
+      "excerpt": "tes3",
+      "url": "tes",
+      "id": 9,
+      "date": "2025.2.1"
+    },
+    {
+      "title": "てす２",
+      "category": "お知らせ",
+      "excerpt": "tes",
+      "url": "tes",
+      "id": 8,
+      "date": "2025.2.1"
+    },
+    {
+      "title": "てす",
+      "category": "お知らせ",
+      "excerpt": "テスト",
+      "url": "test",
+      "id": 7,
+      "date": "2025.2.1"
+    },
+    {
+      "title": "テスト",
+      "category": "お知らせ",
+      "excerpt": "テスト",
+      "url": "test",
+      "id": 6,
+      "date": "2025.2.1"
+    },
+    {
+      "id": 1,
+      "date": "2025.02.01",
+      "category": "お知らせ",
+      "title": "母の日ギフトの予約受付を開始いたしました",
+      "excerpt": "今年の母の日は5月11日。感謝の気持ちを込めて、特別なフラワーギフトをご用意しました。",
+      "url": "news/mothers-day-2025.html"
+    },
+    {
+      "id": 2,
+      "date": "2025.01.25",
+      "category": "店舗情報",
+      "title": "銀座店 リニューアルオープンのお知らせ",
+      "excerpt": "2月1日、銀座店が生まれ変わります。新しいコンセプトで、より快適な空間に。",
+      "url": "news/ginza-renewal.html"
+    },
+    {
+      "id": 3,
+      "date": "2025.01.15",
+      "category": "キャンペーン",
+      "title": "新春フラワーキャンペーンのお知らせ",
+      "excerpt": "新年を彩る、特別なアレンジメントをご用意しました。",
+      "url": "news/new-year-campaign.html"
+    },
+    {
+      "id": 4,
+      "date": "2025.01.10",
+      "category": "商品情報",
+      "title": "バレンタイン限定商品のご案内",
+      "excerpt": "大切な方への気持ちを花に込めて。バレンタイン限定のアレンジメントが登場。",
+      "url": "news/valentines-day-2025.html"
+    },
+    {
+      "id": 5,
+      "date": "2025.01.05",
+      "category": "ワークショップ",
+      "title": "2月のワークショップスケジュール",
+      "excerpt": "人気のフラワーアレンジメント教室の2月期の予約受付を開始いたします。",
+      "url": "news/february-workshop.html"
+    }
+  ]
+}

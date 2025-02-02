@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理画面 - Flower Market</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="admin-dashboard">
+    <nav class="admin-nav">
+        <div class="nav-header">
+            <h1>Flower Market</h1>
+            <span class="user-info">
+                <i class="fas fa-user"></i>
+                <span id="username-display"></span>
+            </span>
+        </div>
+        <ul class="nav-menu">
+            <li class="active"><a href="#news"><i class="fas fa-newspaper"></i>お知らせ管理</a></li>
+            <li><a href="#products"><i class="fas fa-flower"></i>商品管理</a></li>
+            <li><a href="#orders"><i class="fas fa-shopping-cart"></i>注文管理</a></li>
+            <li><a href="#users"><i class="fas fa-users"></i>ユーザー管理</a></li>
+            <li class="logout"><a href="#" id="logout"><i class="fas fa-sign-out-alt"></i>ログアウト</a></li>
+        </ul>
+    </nav>
+
+    <main class="admin-main">
+        <div class="content-header">
+            <h2>お知らせ管理</h2>
+            <button class="add-new" id="addNewNews">
+                <i class="fas fa-plus"></i> 新規追加
+            </button>
+        </div>
+
+        <div class="content-body">
+            <div class="news-list" id="newsList">
+                <!-- ニュース一覧がここに動的に表示されます -->
+            </div>
+        </div>
+
+        <!-- 新規追加/編集モーダル -->
+        <div class="modal" id="newsModal">
+            <div class="modal-content">
+                <h3>お知らせを編集</h3>
+                <form id="newsForm">
+                    <div class="form-group">
+                        <label for="newsTitle">タイトル</label>
+                        <input type="text" id="newsTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newsCategory">カテゴリー</label>
+                        <select id="newsCategory" name="category" required>
+                            <option value="お知らせ">お知らせ</option>
+                            <option value="店舗情報">店舗情報</option>
+                            <option value="キャンペーン">キャンペーン</option>
+                            <option value="商品情報">商品情報</option>
+                            <option value="ワークショップ">ワークショップ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newsExcerpt">概要</label>
+                        <textarea id="newsExcerpt" name="excerpt" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="newsUrl">URL</label>
+                        <input type="text" id="newsUrl" name="url" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel" onclick="closeModal()">キャンセル</button>
+                        <button type="submit" class="save">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
