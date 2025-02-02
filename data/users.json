@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "id": "demo1",
+      "email": "demo@example.com",
+      "password": "demo1234",
+      "name": "デモユーザー",
+      "membershipLevel": "gold",
+      "registeredDate": "2025-02-02"
+    }
+  ]
+}

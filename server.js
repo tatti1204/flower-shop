@@ -9,6 +9,7 @@ const port = process.env.PORT || 3001;
 
 // ニュースデータのパス
 const newsFilePath = path.join(__dirname, 'data', 'news.json');
+const usersFilePath = path.join(__dirname, 'data', 'users.json');
 
 // 認証ミドルウェア（簡易版）
 const authenticate = (req, res, next) => {
@@ -29,6 +30,33 @@ app.use(bodyParser.json());
 // 静的ファイルの提供
 app.use(express.static(path.join(__dirname)));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
+app.use('/member', express.static(path.join(__dirname, 'member')));
+
+// 会員ログインAPI
+app.post('/api/member/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const userData = await fs.readFile(usersFilePath, 'utf8');
+        const users = JSON.parse(userData).users;
+        
+        const user = users.find(u => u.email === email && u.password === password);
+        
+        if (user) {
+            // 簡易的なトークン生成（本番環境ではより安全な方法を使用してください）
+            const token = Buffer.from(`${user.id}-${Date.now()}`).toString('base64');
+            res.json({
+                token,
+                name: user.name,
+                membershipLevel: user.membershipLevel
+            });
+        } else {
+            res.status(401).json({ error: 'メールアドレスまたはパスワードが正しくありません' });
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ error: 'ログイン処理に失敗しました' });
+    }
+});
 
 // APIエンドポイント
 

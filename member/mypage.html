@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイページ - Flower Shop</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .mypage-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .welcome-message {
+            margin-bottom: 30px;
+        }
+        .member-content {
+            margin-top: 20px;
+        }
+        .special-offers {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .logout-btn {
+            padding: 10px 20px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+        .logout-btn:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="mypage-container">
+        <button id="logoutBtn" class="logout-btn">ログアウト</button>
+        <div class="welcome-message">
+            <h2>ようこそ、<span id="memberName"></span>さん</h2>
+        </div>
+        
+        <div class="member-content">
+            <h3>会員限定コンテンツ</h3>
+            <div class="special-offers">
+                <h4>今月の特別オファー</h4>
+                <ul>
+                    <li>季節の花束が20%オフ</li>
+                    <li>会員限定ワークショップの優先予約</li>
+                    <li>オリジナルフラワーアレンジメントの無料相談</li>
+                </ul>
+            </div>
+            
+            <div class="upcoming-events">
+                <h4>upcoming-events</h4>
+                <p>近日開催予定のイベント情報がここに表示されます...</p>
+            </div>
+        </div>
+    </div>
+    <script src="js/mypage.js"></script>
+</body>
+</html>
